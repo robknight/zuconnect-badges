@@ -23,8 +23,8 @@ export default withSessionRoute(async function (
   const ticketData: ITicketData = {
     attendeeName: req.session.attendeeName as string,
     attendeeEmail: req.session.attendeeEmail as string,
-    eventName: "ZuConnect Istanbul",
-    ticketName: "Volunteer",
+    eventName: "Volunteer Badge",
+    ticketName: "ZuConnect Volunteer",
     checkerEmail: "",
     // the fields below are signed using the server's private eddsa key
     ticketId: req.session.ticketId as string,

@@ -145,7 +145,7 @@ function Claim({
       <div className="flex justify-center">
         <div className="border-[#fcb270] border w-[372px] rounded-[12px] overflow-hidden">
           <div className="bg-[#35655f] uppercase text-center p-[10px] tracking-[1px] text-[20px] leading-[1.5] font-[400]">
-            ZuConnect Istanbul (Volunteer)
+            Volunteer Badge (ZuConnect Volunteer)
           </div>
           <div>
             <Image
