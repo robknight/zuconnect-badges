@@ -5,13 +5,13 @@ import { EdDSATicketPCDPackage, ITicketData } from "@pcd/eddsa-ticket-pcd";
 import { constructZupassPcdAddRequestUrl } from "@pcd/passport-interface";
 
 import axios from "axios";
-import { Inter, Playfair_Display } from "next/font/google";
+import { IBM_Plex_Sans, Inter } from "next/font/google";
 import Head from "next/head";
 import Image from "next/image";
 import { useCallback, useState } from "react";
 
+const PlexSans = IBM_Plex_Sans({ subsets: ["latin"], weight: "400" });
 const inter = Inter({ subsets: ["latin"] });
-const playFair = Playfair_Display({ subsets: ["latin"] });
 
 interface UserData {
   attendeeName?: string;
@@ -28,7 +28,7 @@ export default function Home() {
 
   return (
     <main
-      className={`container max-w-xl mx-auto my-4 text-[#fcfffe] ${inter.className}`}
+      className={`container max-w-xl mx-auto my-4 text-[#fcfffe] ${PlexSans.className}`}
     >
       <Head>
         <title>Claim your ZuConnect Badge</title>
@@ -36,14 +36,14 @@ export default function Home() {
 
       <div className="rounded-lg p-8 ">
         <h1
-          className={`font-semibold text-4xl underline decoration-[#708e8c] mb-12 text-center ${playFair.className}`}
+          className={`font-semibold text-4xl underline decoration-[#708e8c] mb-12 text-center`}
         >
           Claim your ZuConnect Badge
         </h1>
         {userData &&
-          userData.attendeeEmail &&
-          userData.attendeeName &&
-          userData.ticketId && (
+          userData.attendeeEmail !== undefined &&
+          userData.attendeeName !== undefined &&
+          userData.ticketId !== undefined && (
             <Claim
               attendeeEmail={userData.attendeeEmail}
               attendeeName={userData.attendeeName}
@@ -51,17 +51,19 @@ export default function Home() {
           )}
 
         {userData &&
-          userData.attendeeEmail &&
-          userData.attendeeName &&
+          userData.attendeeEmail !== undefined &&
+          userData.attendeeName !== undefined &&
           !userData.ticketId && (
             <NoBadgeAvailable
               onAuth={onAuth}
               attendeeEmail={userData.attendeeEmail}
             />
           )}
-        {!(userData && userData.attendeeEmail && userData.attendeeName) && (
-          <Login onAuth={onAuth} />
-        )}
+        {!(
+          userData &&
+          userData.attendeeEmail !== undefined &&
+          userData.attendeeName !== undefined
+        ) && <Login onAuth={onAuth} />}
       </div>
     </main>
   );
@@ -109,8 +111,12 @@ function Claim({
   attendeeName: string;
   attendeeEmail: string;
 }) {
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<boolean>(false);
+
   const addPCD = useCallback(async () => {
     // @todo exception-handling
+    setLoading(true);
     const result = await axios.get("/api/generate-badge");
     if (result.data.pcd) {
       await EdDSAPCDPackage.init?.({});
@@ -126,6 +132,7 @@ function Claim({
       );
 
       const popupUrl = `/popup?proofUrl=${encodeURIComponent(url)}`;
+      setLoading(false);
       window.open(popupUrl, "_blank", "width=450,height=600,top=100,popup");
     }
   }, []);
@@ -155,7 +162,7 @@ function Claim({
         </div>
       </div>
       <div className="my-8 flex justify-center">
-        <AddToZupass onClick={addPCD} />
+        <AddToZupass onClick={addPCD} loading={loading} />
       </div>
     </>
   );

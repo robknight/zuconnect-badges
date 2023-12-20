@@ -12,14 +12,11 @@ import {
   ZKEdDSAEventTicketPCDPackage
 } from "@pcd/zk-eddsa-event-ticket-pcd";
 import { useEffect, useState } from "react";
-import { supportedEvents } from "../config/zupass-config";
-
-const ZUPASS_URL = "https://zupass.org";
 
 /**
  * Opens a Zupass popup to make a proof of a ZK EdDSA event ticket PCD.
  */
-function openZKEdDSAEventTicketPopup(
+export function openZKEdDSAEventTicketPopup(
   fieldsToReveal: EdDSATicketFieldsToReveal,
   watermark: bigint,
   validEventIds: string[],
@@ -68,7 +65,7 @@ function openZKEdDSAEventTicketPopup(
   const popupUrl = window.location.origin + "/popup";
 
   const proofUrl = constructZupassPcdGetRequestUrl(
-    ZUPASS_URL,
+    process.env.NEXT_PUBLIC_ZUPASS_URL as string,
     popupUrl,
     ZKEdDSAEventTicketPCDPackage.name,
     args,
@@ -84,38 +81,26 @@ function openZKEdDSAEventTicketPopup(
 
 type PartialTicketData = Partial<ITicketData>;
 
-async function login() {
-  const nonce = await (
-    await fetch("/api/nonce", { credentials: "include" })
-  ).text();
-
-  openZKEdDSAEventTicketPopup(
-    {
-      revealAttendeeEmail: true,
-      revealAttendeeName: true
-    },
-    BigInt(nonce),
-    supportedEvents,
-    []
-  );
-}
+export type ProvingState = "initial" | "verifying" | "verified" | "error";
 
 export function useZupass({
   onAuth
 }: {
   onAuth: (ticketData: PartialTicketData) => void;
 }): {
-  login: () => Promise<void>;
   ticketData: PartialTicketData | undefined;
+  state: ProvingState;
 } {
   const [pcdStr] = useZupassPopupMessages();
   const [ticketData, setTicketData] = useState<PartialTicketData | undefined>(
     undefined
   );
+  const [state, setState] = useState<ProvingState>("initial");
 
   useEffect(() => {
     (async () => {
       if (pcdStr && !ticketData) {
+        setState("verifying");
         const response = await fetch("/api/login", {
           method: "POST",
           mode: "cors",
@@ -131,10 +116,11 @@ export function useZupass({
           const data = await response.json();
           setTicketData(data);
           onAuth(data);
+          setState("verified");
         }
       }
     })();
   }, [onAuth, pcdStr, ticketData]);
 
-  return { login, ticketData };
+  return { state, ticketData };
 }
