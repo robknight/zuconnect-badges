@@ -44,7 +44,7 @@ export default withSessionRoute(async function (
       const badge = await supabase
         .from("badges")
         .select("*")
-        .eq("email", attendeeEmail)
+        .ilike("email", `${attendeeEmail}`)
         .single();
       ticketId = badge.data.id;
     } catch (e) {
