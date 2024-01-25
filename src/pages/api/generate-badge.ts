@@ -23,8 +23,8 @@ export default withSessionRoute(async function (
   const ticketData: ITicketData = {
     attendeeName: req.session.attendeeName as string,
     attendeeEmail: req.session.attendeeEmail as string,
-    eventName: "Volunteer Badge",
-    ticketName: "ZuConnect Volunteer",
+    eventName: "Vitalia",
+    ticketName: "Attendee",
     checkerEmail: "",
     // the fields below are signed using the server's private eddsa key
     ticketId: req.session.ticketId as string,
@@ -32,12 +32,12 @@ export default withSessionRoute(async function (
     productId: BADGE_PRODUCT_ID,
     timestampSigned: Date.now(),
     timestampConsumed: 0,
-    attendeeSemaphoreId: "12345",
+    attendeeSemaphoreId: req.session.semaphoreId as string,
     isConsumed: false,
     isRevoked: false,
     ticketCategory: TicketCategory.Generic,
-    imageUrl: `${scheme}://${host}/badges/zuconnect-volunteer.png`,
-    imageAltText: "ZuConnect Volunteer Badge"
+    imageUrl: `${scheme}://${host}/badges/vitalia.jpg`,
+    imageAltText: "Vitalia Badge"
   };
 
   const prvKey = process.env.PRIVATE_KEY;

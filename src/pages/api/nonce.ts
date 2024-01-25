@@ -9,6 +9,7 @@ declare module "iron-session" {
     attendeeEmail?: string;
     attendeeName?: string;
     ticketId?: string;
+    semaphoreId?: string;
   }
 }
 

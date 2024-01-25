@@ -5,18 +5,18 @@ import { EdDSATicketPCDPackage, ITicketData } from "@pcd/eddsa-ticket-pcd";
 import { constructZupassPcdAddRequestUrl } from "@pcd/passport-interface";
 
 import axios from "axios";
-import { IBM_Plex_Sans, Inter } from "next/font/google";
+import { IBM_Plex_Sans } from "next/font/google";
 import Head from "next/head";
 import Image from "next/image";
 import { useCallback, useState } from "react";
 
 const PlexSans = IBM_Plex_Sans({ subsets: ["latin"], weight: "400" });
-const inter = Inter({ subsets: ["latin"] });
 
 interface UserData {
   attendeeName?: string;
   attendeeEmail?: string;
   ticketId?: string;
+  semaphoreId?: string;
 }
 
 export default function Home() {
@@ -31,14 +31,14 @@ export default function Home() {
       className={`container max-w-xl mx-auto my-4 text-[#fcfffe] ${PlexSans.className}`}
     >
       <Head>
-        <title>Claim your ZuConnect Badge</title>
+        <title>Claim your Vitalia Badge</title>
       </Head>
 
       <div className="rounded-lg p-8 ">
         <h1
           className={`font-semibold text-4xl underline decoration-[#708e8c] mb-12 text-center`}
         >
-          Claim your ZuConnect Badge
+          Claim your Vitalia Badge
         </h1>
         {userData &&
           userData.attendeeEmail !== undefined &&
@@ -73,8 +73,7 @@ function Login({ onAuth }: { onAuth: (data: Partial<ITicketData>) => void }) {
   return (
     <>
       <p className="my-8">
-        To claim your volunteer badge, sign in with Zupass using the button
-        below.
+        To claim your badge, sign in with Zupass using the button below.
       </p>
       <div className="flex justify-center">
         <AuthButton onAuth={onAuth} />
@@ -112,7 +111,6 @@ function Claim({
   attendeeEmail: string;
 }) {
   const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<boolean>(false);
 
   const addPCD = useCallback(async () => {
     // @todo exception-handling
@@ -145,14 +143,14 @@ function Claim({
       <div className="flex justify-center">
         <div className="border-[#fcb270] border w-[372px] rounded-[12px] overflow-hidden">
           <div className="bg-[#35655f] uppercase text-center p-[10px] tracking-[1px] text-[20px] leading-[1.5] font-[400]">
-            Volunteer Badge (ZuConnect Volunteer)
+            Vitalia (Attendee)
           </div>
           <div>
             <Image
               width="370"
               height="370"
-              alt="ZuConnect Volunteer Badge"
-              src="/badges/zuconnect-volunteer.png"
+              alt="Vitalia Badge"
+              src="/badges/vitalia.jpg"
             />
           </div>
           <div className="bg-white p-[12px] flex flex-col text-[#19473f] text-center text-blue">

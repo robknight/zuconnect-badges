@@ -11,11 +11,11 @@
   "dependencies": {
     "@pcd/eddsa-pcd": "^0.5.0",
     "@pcd/eddsa-ticket-pcd": "^0.5.0",
+    "@pcd/email-pcd": "^0.5.0",
     "@pcd/passport-interface": "^0.10.0",
     "@pcd/pcd-types": "^0.10.0",
     "@pcd/semaphore-identity-pcd": "^0.10.0",
     "@pcd/util": "^0.4.0",
-    "@pcd/zk-eddsa-event-ticket-pcd": "^0.4.0",
     "@supabase/supabase-js": "^2.39.1",
     "@types/styled-components": "^5.1.34",
     "@types/uuid": "^9.0.7",

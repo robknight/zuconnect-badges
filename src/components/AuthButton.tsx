@@ -1,7 +1,8 @@
 "use client";
-import { supportedEvents } from "@/config/zupass-config";
-import { openZKEdDSAEventTicketPopup, useZupass } from "@/utils/zupass";
+import { useZupass } from "@/utils/zupass";
 import { ITicketData } from "@pcd/eddsa-ticket-pcd";
+import { EmailPCDTypeName } from "@pcd/email-pcd";
+import { getWithoutProvingUrl, openZupassPopup } from "@pcd/passport-interface";
 import { useCallback, useEffect, useState } from "react";
 import SignInWithZupass from "./SignInWithZupass";
 
@@ -15,26 +16,22 @@ export default function AuthButton({
   useEffect(() => {
     (async () => {
       if (isLoading) {
-        const nonce = await (
-          await fetch("/api/nonce", { credentials: "include" })
-        ).text();
-
         setLoading(false);
 
-        openZKEdDSAEventTicketPopup(
-          {
-            revealAttendeeEmail: true,
-            revealAttendeeName: true
-          },
-          BigInt(nonce),
-          supportedEvents,
-          []
+        const popupUrl = window.location.origin + "/popup";
+        const getUrl = getWithoutProvingUrl(
+          process.env.NEXT_PUBLIC_ZUPASS_URL as string,
+          popupUrl,
+          EmailPCDTypeName
         );
+
+        window.setTimeout(() => openZupassPopup(popupUrl, getUrl), 0);
       }
     })();
   }, [isLoading]);
 
   const { state } = useZupass({ onAuth });
+  console.log(state);
 
   const onClick = useCallback(() => {
     setLoading(true);

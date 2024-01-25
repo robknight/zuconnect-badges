@@ -1,6 +1,6 @@
 import { supabase } from "@/lib/initSupabase";
 import { withSessionRoute } from "@/utils/withSession";
-import { ZKEdDSAEventTicketPCDPackage } from "@pcd/zk-eddsa-event-ticket-pcd";
+import { EmailPCDPackage } from "@pcd/email-pcd";
 import { NextApiRequest, NextApiResponse } from "next";
 
 /**
@@ -21,24 +21,18 @@ export default withSessionRoute(async function (
       return;
     }
 
-    const pcd = await ZKEdDSAEventTicketPCDPackage.deserialize(req.body.pcd);
+    const pcd = await EmailPCDPackage.deserialize(req.body.pcd);
 
-    if (!(await ZKEdDSAEventTicketPCDPackage.verify(pcd))) {
-      console.error(`[ERROR] ZK ticket PCD is not valid`);
+    if (!(await EmailPCDPackage.verify(pcd))) {
+      console.error(`[ERROR] Email PCD is not valid`);
 
-      res.status(401).send("ZK ticket PCD is not valid");
+      res.status(401).send("Email PCD is not valid");
       return;
     }
 
-    if (pcd.claim.watermark.toString() !== req.session.nonce) {
-      console.error(`[ERROR] PCD watermark doesn't match`);
-
-      res.status(401).send("PCD watermark doesn't match");
-      return;
-    }
-
-    const { attendeeEmail, attendeeName } = pcd.claim.partialTicket;
+    const attendeeEmail = pcd.claim.emailAddress;
     let ticketId: string | undefined = undefined;
+    let attendeeName;
 
     try {
       const badge = await supabase
@@ -47,6 +41,7 @@ export default withSessionRoute(async function (
         .ilike("email", `${attendeeEmail}`)
         .single();
       ticketId = badge.data.id;
+      attendeeName = badge.data.name;
     } catch (e) {
       console.log(e);
     }
@@ -56,7 +51,8 @@ export default withSessionRoute(async function (
       req.session.ticketId = ticketId;
       req.session.attendeeEmail = attendeeEmail;
       req.session.attendeeName = attendeeName;
-
+      req.session.semaphoreId = pcd.claim.semaphoreId;
+      console.log(req.session);
       await req.session.save();
     }
 
