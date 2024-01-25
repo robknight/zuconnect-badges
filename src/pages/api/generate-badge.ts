@@ -8,8 +8,8 @@ import {
 import { ArgumentTypeName } from "@pcd/pcd-types";
 import { NextApiRequest, NextApiResponse } from "next";
 
-const BADGE_EVENT_ID = "827e7941-8b5d-4ff4-bf80-e8b9dc250960";
-const BADGE_PRODUCT_ID = "8f2645e0-9acc-4143-a6ad-ba12e6d882b6";
+const BADGE_EVENT_ID = "9ccc53cb-3b0a-415b-ab0d-76cfa21c72ac";
+const BADGE_PRODUCT_ID = "cd3f2b06-e520-4eff-b9ed-c52365c60848";
 
 export default withSessionRoute(async function (
   req: NextApiRequest,
